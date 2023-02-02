@@ -13,6 +13,7 @@
 #include <math.h>
 
 using namespace AS::CAN;
+using namespace std;
 
 ros::Publisher can_rx_pub,inspvax_pub,imu_pub;
 ros::Subscriber can_tx_sub;
@@ -44,9 +45,9 @@ float vel_u_sigma;
 
 double latitudedouble ;
 double longitudedouble;
-float latitude;
-float longitude;
-float height;
+double latitude;
+double longitude;
+double height;
 
 float latitude_sigma ;
 float longitude_sigma;
@@ -118,14 +119,16 @@ void can_tx_sub_callback(const can_msgs::Frame::ConstPtr& ros_msg)
 		postype=inter_variable;
 	}else if (ros_msg->id == 0x631)
 	{
-		signed int inter_variable=ros_msg->data[3]*256*256*256+ros_msg->data[2]*256*256+ros_msg->data[1]*256+ros_msg->data[0];
-		latitude=inter_variable*1e-7;
+		signed long int inter_variable=ros_msg->data[3]*256*256*256+ros_msg->data[2]*256*256+ros_msg->data[1]*256+ros_msg->data[0];
+		// cout<<"latitude : "<<setprecision(12)<<inter_variable<<endl;
+		latitude=static_cast<double>(inter_variable)*1e-7;
 		inter_variable=ros_msg->data[7]*256*256*256+ros_msg->data[6]*256*256+ros_msg->data[5]*256+ros_msg->data[4];
-		longitude=inter_variable*1e-7;
+		// cout<<"longitude : "<<setprecision(12)<<inter_variable<<endl;
+		longitude=static_cast<double>(inter_variable)*1e-7;
 	}else if (ros_msg->id == 0x632)
 	{
-		signed int inter_variable=ros_msg->data[3]*256*256*256+ros_msg->data[2]*256*256+ros_msg->data[1]*256+ros_msg->data[0];
-		height=inter_variable*0.001;
+		signed long int inter_variable=ros_msg->data[3]*256*256*256+ros_msg->data[2]*256*256+ros_msg->data[1]*256+ros_msg->data[0];
+		height=static_cast<double>(inter_variable)*0.001;
 		unsigned short inter_variable_1=ros_msg->data[5]*256+ros_msg->data[4];
 		height_sigma=inter_variable_1*0.001;
 		inter_variable_1=ros_msg->data[7]*256+ros_msg->data[6];

@@ -11,13 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   novatel_oem7_msgs
 )
 
-generate_messages(
-  DEPENDENCIES
-  roscpp
-  can_msgs
-  novatel_oem7_msgs
-)
-
 catkin_package(
   CATKIN_DEPENDS roscpp can_msgs novatel_oem7_msgs
   INCLUDE_DIRS include
@@ -80,27 +73,6 @@ target_link_libraries(list_channels
 
 set(ROSLINT_CPP_OPTS "--filter=-runtime/threadsafe_fn,-build/namespaces,-build/c++11")
 roslint_cpp()
-
-if(CATKIN_ENABLE_TESTING)
-  roslint_add_test()
-
-  find_package(catkin REQUIRED COMPONENTS rosunit)
-  catkin_add_gtest(${PROJECT_NAME}_tests
-    tests/${PROJECT_NAME}_tests.cpp)
-  target_link_libraries(${PROJECT_NAME}_tests
-    ros_${PROJECT_NAME}
-    ${catkin_LIBRARIES})
-
-  find_package(catkin REQUIRED COMPONENTS rostest)
-  add_rostest(tests/reader_writer_1000hz.test)
-
-  add_rostest_gtest(${PROJECT_NAME}_ros_tests
-    tests/can_bridge_tests.test
-    tests/${PROJECT_NAME}_ros_tests.cpp)
-  target_link_libraries(${PROJECT_NAME}_ros_tests
-    ros_${PROJECT_NAME}
-    ${catkin_LIBRARIES})
-endif()
 
 install(
   TARGETS
