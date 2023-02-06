@@ -53,8 +53,8 @@ float latitude_sigma ;
 float longitude_sigma;
 float height_sigma;
 
-float gnss_week;
-float gnss_seconds;
+unsigned short int gnss_week;
+unsigned int gnss_week_milliseconds;
 float ins_status;
 float postype;
 float checksum;
@@ -65,6 +65,8 @@ void inspvax_publisher()
   msg.header.stamp=ros::Time::now();
   msg.header.frame_id="gps";
   // msg.nov_header=inspva_msg->nov_header;
+  msg.nov_header.gps_week_number=gnss_week;
+  msg.nov_header.gps_week_milliseconds=gnss_week_milliseconds;
   msg.latitude=latitude;
   msg.longitude=longitude;
   msg.height=height;
@@ -109,10 +111,10 @@ void can_tx_sub_callback(const can_msgs::Frame::ConstPtr& ros_msg)
 {
 	if (ros_msg->id == 0x630)
 	{
-		unsigned short inter_variable=ros_msg->data[1]*256+ros_msg->data[0];
+		unsigned int inter_variable=ros_msg->data[1]*256+ros_msg->data[0];
 		gnss_week=inter_variable;
-		inter_variable=ros_msg->data[3]*256+ros_msg->data[2];
-		gnss_seconds=static_cast<float>(inter_variable)*0.001;
+		inter_variable=ros_msg->data[5]*256*256*256+ros_msg->data[4]*256*256+ros_msg->data[3]*256+ros_msg->data[2];
+		gnss_week_milliseconds=inter_variable;
 		inter_variable=ros_msg->data[6];
 		ins_status=inter_variable;
 		inter_variable=ros_msg->data[7];
